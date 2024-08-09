@@ -20,6 +20,9 @@ class OfficeApp
     when '/coffee/ready'
       post_to_google_chat("Ready message triggered! (via Ruby script)")
       serve_html('coffee/ready.html')
+    when '/coffee/finish'
+      post_to_google_chat("Finish message triggered! (via Ruby script)")
+      serve_html('coffee/finish.html')
     else
       serve_html('404.html', 404)
     end
