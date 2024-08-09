@@ -18,11 +18,13 @@ class OfficeApp
     when '/coffee'
       serve_html('coffee/index.html')
     when '/coffee/ready'
-      post_to_google_chat("Ready message triggered! (via Ruby script)")
-      serve_html('coffee/ready.html')
+      status_code, status_message = post_to_google_chat("Ready message triggered! (via Ruby script)")
+      result_message = "#{status_code} #{status_message}"
+      serve_html('coffee/ready.html', message: result_message)
     when '/coffee/finish'
-      post_to_google_chat("Finish message triggered! (via Ruby script)")
-      serve_html('coffee/finish.html')
+      status_code, status_message = post_to_google_chat("Finish message triggered! (via Ruby script)")
+      result_message = "#{status_code} #{status_message}"
+      serve_html('coffee/finish.html', message: result_message)
     else
       serve_html('404.html', 404)
     end
@@ -40,14 +42,22 @@ class OfficeApp
     request = Net::HTTP::Post.new(uri.request_uri, header)
     request.body = body
 
-    response = http.request(request)
+    begin
+      response = http.request(request)
+      status_code = response.code.to_i
+      status_message = response.message
+      [status_code, status_message]
+    rescue StandardError => e
+      [500, "Internal Server Error: #{e.message}"]
+    end
     #puts "Response from Google Chat: #{response.body}"
   end
 
-  def serve_html(filename, status = 200)
+  def serve_html(filename, status = 200, message: '')
     file_path = File.join(VIEW_PATH, filename)
     if File.exist?(file_path)
       content = File.read(file_path)
+      content.gsub!('{{message}}', message)
       [status, { 'content-type' => 'text/html' }, [content]]
     else
       [404, { 'content-type' => 'text/plain' }, ['File Not Found']]
