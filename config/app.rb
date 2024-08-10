@@ -5,35 +5,23 @@ require 'net/http'
 require 'uri'
 require 'json'
 require 'yaml'
+require_relative '../router'
 
 class OfficeApp
   SETTINGS = YAML.load_file('settings.yml')
-  WEBHOOK_URL = SETTINGS['webhook_url']
-  VIEW_PATH = File.join(__dir__, 'views')
+  VIEW_PATH = File.join(__dir__, '../views')
+
+  def initialize
+    @request_router = RequestRouter.new(self)
+  end
 
   def call(env)
     request = Rack::Request.new(env)
-
-    case request.path
-    when '/coffee'
-      serve_html('coffee/index.html')
-    when '/coffee/ready'
-      status_code, status_message = post_to_google_chat("Ready message triggered! (via Ruby script)")
-      result_message = "#{status_code} #{status_message}"
-      serve_html('coffee/ready.html', message: result_message)
-    when '/coffee/finish'
-      status_code, status_message = post_to_google_chat("Finish message triggered! (via Ruby script)")
-      result_message = "#{status_code} #{status_message}"
-      serve_html('coffee/finish.html', message: result_message)
-    else
-      serve_html('404.html', 404)
-    end
+    @request_router.handle_request(request)
   end
 
-  private
-
   def post_to_google_chat(message)
-    uri = URI.parse(WEBHOOK_URL)
+    uri = URI.parse(SETTINGS['webhook_url'])
     header = { 'content-type': 'application/json' }
     body = { text: message }.to_json
 
@@ -50,7 +38,6 @@ class OfficeApp
     rescue StandardError => e
       [500, "Internal Server Error: #{e.message}"]
     end
-    #puts "Response from Google Chat: #{response.body}"
   end
 
   def serve_html(filename, status = 200, message: '')

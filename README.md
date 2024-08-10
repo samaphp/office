@@ -18,4 +18,4 @@ This open-source Ruby script, crafted with the assistance of ChatGPT, brings aut
 - `rbenv install 3.2.2`
 - `rbenv global 3.2.2`
 - Install Rack web server `gem install rack`
-- Start the server: `rackup config.ru -p 9292`
+- Start the server: `cd config && rackup config.ru -p 9292`
