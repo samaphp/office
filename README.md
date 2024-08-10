@@ -22,6 +22,12 @@ This open-source Ruby script, crafted with the assistance of ChatGPT, brings aut
 # Starting the server
 - `cd config && rackup config.ru -p 9292` or just `cd config && rackup`
 
+# Roadmap
+- [ ] **Style Coffee Status:** Implement styling on the coffee index page to indicate Google Chat API success or failure (e.g., green for success, red for failure).
+- [ ] **Use ChatGPT for Notifications:** Integrate ChatGPT to generate notification messages, potentially as a third button option.
+- [ ] **Text Field for Context:** Add a text field for each status, allowing visitors to provide context for ChatGPT to create personalized notification messages.
+- [ ] **Set Up CI with GitHub Actions:** Implement continuous integration (CI) using GitHub Actions to automate testing and deployment.
+
 # Contribution guide
 Your contributions are greatly appreciated. Please follow the guidelines below to ensure a smooth and efficient collaboration.
 1. Adding New Routes:
