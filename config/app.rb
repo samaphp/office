@@ -40,12 +40,17 @@ class OfficeApp
     end
   end
 
-  def serve_html(filename, status = 200, message: '')
+  def serve_html(filename, status = 200, message: '', title: 'My Application')
     file_path = File.join(VIEW_PATH, filename)
-    if File.exist?(file_path)
+    layout_path = File.join(VIEW_PATH, 'layout.html')
+    if File.exist?(file_path) && File.exist?(layout_path)
       content = File.read(file_path)
-      content.gsub!('{{message}}', message)
-      [status, { 'content-type' => 'text/html' }, [content]]
+      layout = File.read(layout_path)
+      page_content = layout.gsub('{{title}}', title)
+                          .gsub('{{content}}', content)
+                          .gsub('{{message}}', message)
+
+      [status, { 'content-type' => 'text/html' }, [page_content]]
     else
       [404, { 'content-type' => 'text/plain' }, ['File Not Found']]
     end
