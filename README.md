@@ -27,6 +27,7 @@ This open-source Ruby script, crafted with the assistance of ChatGPT, brings aut
 - [ ] **Use ChatGPT for Notifications:** Integrate ChatGPT to generate notification messages, potentially as a third button option.
 - [ ] **Text Field for Context:** Add a text field for each status, allowing visitors to provide context for ChatGPT to create personalized notification messages.
 - [ ] **Set Up CI with GitHub Actions:** Implement continuous integration (CI) using GitHub Actions to automate testing and deployment.
+- [ ] **Rate Limiting for Notifications:** Implement rate limiting to control the frequency of chat notifications and reduce the risk of abuse. This can involve setting limits on the number of notifications sent per user or IP address within a specific time frame.
 
 # Contribution guide
 Your contributions are greatly appreciated. Please follow the guidelines below to ensure a smooth and efficient collaboration.
