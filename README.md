@@ -49,6 +49,7 @@ WantedBy=multi-user.target
 - [ ] **Text Field for Context:** Add a text field for each status, allowing visitors to provide context for ChatGPT to create personalized notification messages.
 - [ ] **Set Up CI with GitHub Actions:** Implement continuous integration (CI) using GitHub Actions to automate testing and deployment.
 - [x] **Rate Limiting for Notifications:** Implement rate limiting to control the frequency of chat notifications and reduce the risk of abuse. This can involve setting limits on the number of notifications sent per user or IP address within a specific time frame.
+- [ ] **Visitor Name Input:** Add a feature where visitors can enter their name in English. This name will be included in the chat message to personalize notifications.
 
 # Contribution guide
 Your contributions are greatly appreciated. Please follow the guidelines below to ensure a smooth and efficient collaboration.
