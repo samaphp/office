@@ -22,6 +22,27 @@ This open-source Ruby script, crafted with the assistance of ChatGPT, brings aut
 # Starting the server
 - `cd config && rackup config.ru -p 9292` or just `cd config && rackup`
 
+# Starting the server as a service
+1. Create service file `/etc/systemd/system/office.service` (assuming your project folder is on this path `/home/office/www/office` and your linux user name is `office`.
+```
+[Unit]
+Description=Office Script
+
+[Service]
+ExecStart=/home/office/.rbenv/shims/rackup /home/office/www/office/config/config.ru -p 9292
+Restart=always
+User=office
+WorkingDirectory=/home/office/www/office/config/
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=office_script
+
+[Install]
+WantedBy=multi-user.target
+```
+2. Enable office service `sudo systemctl enable office.service`
+3. Start the service `sudo systemctl start office.service`
+
 # Roadmap
 - [ ] **Style Coffee Status:** Implement styling on the coffee index page to indicate Google Chat API success or failure (e.g., green for success, red for failure).
 - [ ] **Use ChatGPT for Notifications:** Integrate ChatGPT to generate notification messages, potentially as a third button option.
