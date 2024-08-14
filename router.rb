@@ -11,7 +11,6 @@ class RequestRouter
     @current_request = request # Expose current request for IP address retrieval
 
     case request.path
-
     when '/coffee'
       status_param = request.params['status']
       case status_param
@@ -22,28 +21,21 @@ class RequestRouter
       else
         message = ''
       end
-
       @app.serve_html('coffee/index.html', message: message)
 
     when '/coffee/ready'
-      status_code, message = @app.can_access?('coffee_ready')
-      if status_code == 200
-        status_code, status_message = @app.post_to_google_chat("Ready message triggered! (via Ruby script)")
-        [302, { 'location' => '/coffee?status=ready' }, []]
-      else
-        @app.serve_html('coffee/index.html', message: message)
-      end
+      @app.apply_rate_limit!('coffee_ready')
+      status_code, status_message = @app.post_to_google_chat("Ready message triggered! (via Ruby script)")
+      [302, { 'location' => '/coffee?status=ready' }, []]
 
     when '/coffee/finish'
-      status_code, message = @app.can_access?('coffee_finish')
-      if status_code == 200
-        status_code, status_message = @app.post_to_google_chat("Finish message triggered! (via Ruby script)")
-        [302, { 'location' => '/coffee?status=finish' }, []]
-      else
-        @app.serve_html('coffee/index.html', message: message)
-      end
+      @app.apply_rate_limit!('coffee_finish')
+      status_code, status_message = @app.post_to_google_chat("Finish message triggered! (via Ruby script)")
+      [302, { 'location' => '/coffee?status=finish' }, []]
+
     else
       @app.serve_html('404.html', 404)
     end
+
   end
 end
