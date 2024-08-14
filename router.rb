@@ -25,12 +25,12 @@ class RequestRouter
 
     when '/coffee/ready'
       @app.apply_rate_limit!('coffee_ready')
-      status_code, status_message = @app.post_to_google_chat("Ready message triggered! (via Ruby script)")
+      status_code, status_message = @app.post_to_google_chat("القهوة جاهزة ☕")
       [302, { 'location' => '/coffee?status=ready' }, []]
 
     when '/coffee/finish'
       @app.apply_rate_limit!('coffee_finish')
-      status_code, status_message = @app.post_to_google_chat("Finish message triggered! (via Ruby script)")
+      status_code, status_message = @app.post_to_google_chat("خلصت القهوة 🚫")
       [302, { 'location' => '/coffee?status=finish' }, []]
 
     else

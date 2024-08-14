@@ -36,7 +36,7 @@ class OfficeApp
       if current_time - last_request_time < RATE_LIMIT_PERIOD
         remaining_time = (RATE_LIMIT_PERIOD - (current_time - last_request_time)) / 60.0
         message = "Rate limit exceeded. Please try again in #{remaining_time.ceil} minutes."
-        raise AccessDenied, "Rate limit exceeded. Please try again in #{remaining_time.ceil} minutes."
+        raise AccessDenied, "🛑 Rate limit exceeded.<br />Please try again in #{remaining_time.ceil} minutes"
       else
         RATE_LIMIT_CACHE[key] = current_time
       end
