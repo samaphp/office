@@ -5,14 +5,60 @@ require 'net/http'
 require 'uri'
 require 'json'
 require 'yaml'
+require 'thread'
+require 'time'
 require_relative '../router'
 
 class OfficeApp
   SETTINGS = YAML.load_file('settings.yml')
   VIEW_PATH = File.join(__dir__, '../views')
 
+  RATE_LIMIT_PERIOD = 600 # 10 minutes in seconds
+  CLEANUP_INTERVAL = 10 # Cleanup interval in seconds
+  RATE_LIMIT_CACHE = {} # In-memory store for tracking request timestamps
+
   def initialize
     @request_router = RequestRouter.new(self)
+    start_cleanup_thread
+  end
+
+  def can_access?(action_name)
+    current_time = Time.now.to_i
+    client_ip = @request_router.current_request.ip # Assuming you have a way to get client IP address
+
+    # Generate a key based on action name and client IP
+    key = "#{action_name}:#{client_ip}"
+
+    if RATE_LIMIT_CACHE[key]
+      last_request_time = RATE_LIMIT_CACHE[key]
+      if current_time - last_request_time < RATE_LIMIT_PERIOD
+        remaining_time = (RATE_LIMIT_PERIOD - (current_time - last_request_time)) / 60.0
+        message = "Rate limit exceeded. Please try again in #{remaining_time.ceil} minutes."
+        return [429, message] # HTTP 429 Too Many Requests
+      else
+        RATE_LIMIT_CACHE[key] = current_time
+        return [200, '']
+      end
+    else
+      RATE_LIMIT_CACHE[key] = current_time
+      return [200, '']
+    end
+  end
+
+  def start_cleanup_thread
+    Thread.new do
+      loop do
+        sleep(CLEANUP_INTERVAL)
+        cleanup_expired_cache
+      end
+    end
+  end
+
+  def cleanup_expired_cache
+    current_time = Time.now.to_i
+    RATE_LIMIT_CACHE.delete_if do |key, timestamp|
+      current_time - timestamp >= RATE_LIMIT_PERIOD
+    end
   end
 
   def call(env)
