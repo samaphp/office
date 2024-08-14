@@ -20,6 +20,7 @@ class OfficeApp
   RATE_LIMIT_CACHE = {} # In-memory store for tracking request timestamps
 
   def initialize
+    @user_name = ""
     @request_router = RequestRouter.new(self)
     start_cleanup_thread
   end
@@ -61,6 +62,13 @@ class OfficeApp
     end
   end
 
+  def get_user_name(request)
+    user_name = request.cookies['user_name'].to_s.strip
+    stripped_user_name = user_name.gsub(/<\/?[^>]*>/, "")
+    truncated_user_name = stripped_user_name.slice(0, 20)
+    @user_name = truncated_user_name.empty? ? '' : truncated_user_name
+  end
+
   def call(env)
     request = Rack::Request.new(env)
     begin
@@ -97,9 +105,11 @@ class OfficeApp
     if File.exist?(file_path) && File.exist?(layout_path)
       content = File.read(file_path)
       layout = File.read(layout_path)
+      user_name = @user_name
       page_content = layout.gsub('{{title}}', title)
                           .gsub('{{content}}', content)
                           .gsub('{{message}}', message)
+                          .gsub('{{user_name}}', user_name)
 
       [status, { 'content-type' => 'text/html' }, [page_content]]
     else
